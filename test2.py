@@ -25,4 +25,4 @@ def create_message_from_json(question: str, json_data: str) -> str:
     response = model.generate_content(prompt)
     return response.text
 
-print(create_message_from_json('洗濯機のプライスは？？', consumer_electronics))
+print(create_message_from_json('パソコンのプライスは？？', consumer_electronics))
