@@ -22,10 +22,11 @@ json_open = open('data/appliances_data.json', 'r')
 consumer_electronics = json.load(json_open)
 
 def create_message_from_json(question: str, json_data: str) -> str:
-    prompt = f"以下のjsonファイルを学習して質問に答えてください。\
+    prompt = f"以下のjsonファイルを学習してplain textで質問に答えてください。\
         理由などは述べずに、推測した要素をそのまま出力してください。\
         該当するデータが含まれていない場合は、「データベースに~~に関する情報は含まれていません」を返してください。\
         製品名を答える時は「商品名(家電の種類)」の形式で答えてください。\
+        回答する際には単位をつけてください。\
         \n\n{json_data}\n\n質問:{question}"
     response = model.generate_content(prompt)
     return response.text
