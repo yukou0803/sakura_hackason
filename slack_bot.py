@@ -39,51 +39,52 @@ def respond_to_mention(event, say):
 
 @app.message("価格")
 def response_info(say):
-    say(info["価格"])
+    say(str(info["価格"]))
 
 @app.message("メーカー")
 def response_info(say):
-    say(info["メーカー"])
+    say(str(info["メーカー"]))
 
 @app.message("機能")
 def response_info(say):
-    say(info["機能"])
+    for data in info["機能・特徴"]:
+        say(str(data))
 
 @app.message("容量")
 def response_info(say):
-    say(info[""])
+    say(str(info[""]))
 
 @app.message("サイズ")
 def response_info(say):
-    say(info["サイズ"])
+    say(str(info["サイズ"]))
 
 @app.message("消費電力")
 def response_info(say):
-    say(info["消費電力"])
+    say(str(info["消費電力"]))
 
 @app.message("重量")
 def response_info(say):
-    say(info["重量"])
+    say(str(info["重量"]))
 
 @app.message("色")
 def response_info(say):
-    say(info["色"])
+    say(str(info["色"]))
 
 @app.message("保証期間")
 def response_info(say):
-    say(info["保証期間"])
+    say(str(info["保証期間"]))
 
 @app.message("発売年")
 def response_info(say):
-    say(info["発売年"])
+    say(str(info["発売年"]))
 
 @app.message("耐久年数")
 def response_info(say):
-    say(info["耐久年数"])
+    say(str(info["耐久年数"]))
 
 @app.message("レビュー")
 def response_info(say):
-    say(info["レビュー"])
+    say(str(info["レビュー"]))
 
 
 @app.message("hello")  # 送信されたメッセージ内に"hello"が含まれていたときのハンドラ
