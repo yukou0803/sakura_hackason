@@ -3,93 +3,38 @@ import json
 import re
 from slack_bolt import App
 from slack_bolt.adapter.socket_mode import SocketModeHandler
+from dotenv import load_dotenv
+import google.generativeai as genai
 
+# .envファイルの読み込み
+load_dotenv()
 
-json_token = open('slack_token.json')
-token = json.load(json_token)
-SLACK_BOT_TOKEN = token["SLACK_BOT_TOKEN"]
-SLACK_APP_TOKEN = token["SLACK_APP_TOKEN"]
+# API-KEYの設定
+GOOGLE_API_KEY=os.getenv('GOOGLE_API_KEY')
+genai.configure(api_key=GOOGLE_API_KEY)
+model = genai.GenerativeModel('gemini-pro')
+SLACK_BOT_TOKEN = os.getenv("SLACK_BOT_TOKEN")
+SLACK_APP_TOKEN = os.getenv("SLACK_APP_TOKEN")
 
 app = App(token=SLACK_BOT_TOKEN)
 
-json_open = open('data/aappliances_data.json', 'r')
+json_open = open('data/appliances_data.json', 'r')
 consumer_electronics = json.load(json_open)
 
-# consumer_electronics = json_load["家電リスト"][0]
-info = {}
-# print(consumer_electronics)
+def create_message_from_json(question: str, json_data: str) -> str:
+    prompt = f"以下のjsonファイルを学習して質問に答えてください。\
+        理由などは述べずに、推測した要素をそのまま出力してください。\
+        該当するデータが含まれていない場合は、「データベースに~~に関する情報は含まれていません」を返してください。\
+        製品名を答える時は「商品名(家電の種類)」の形式で答えてください。\
+        \n\n{json_data}\n\n質問:{question}"
+    response = model.generate_content(prompt)
+    return response.text
 
 @app.event("app_mention")  # chatbotにメンションが付けられたときのハンドラ
 def respond_to_mention(event, say):
     text = re.sub(r'^<.*>', '', event['text'])
-    # print(text)
-    # print(text=="冷蔵庫")
-    global info
-    # text = event["text"]
-    flag = 0
-    for key in consumer_electronics:
-        if key in text:
-            flag = 1
-            info = consumer_electronics[key]
-            say(f"{key} に関して知りたい情報を教えてください")
+    say(create_message_from_json(text, consumer_electronics), mrkdwn=True)
 
-    if flag == 0:
-        say("指定された情報は見つかりませんでした。")
-
-
-@app.message("価格")
-def response_info(say):
-    say(str(info["価格"]))
-
-@app.message("メーカー")
-def response_info(say):
-    say(str(info["メーカー"]))
-
-@app.message("機能")
-def response_info(say):
-    for data in info["機能・特徴"]:
-        say(str(data))
-
-@app.message("容量")
-def response_info(say):
-    say(str(info[""]))
-
-@app.message("サイズ")
-def response_info(say):
-    say(str(info["サイズ"]))
-
-@app.message("消費電力")
-def response_info(say):
-    say(str(info["消費電力"]))
-
-@app.message("重量")
-def response_info(say):
-    say(str(info["重量"]))
-
-@app.message("色")
-def response_info(say):
-    say(str(info["色"]))
-
-@app.message("保証期間")
-def response_info(say):
-    say(str(info["保証期間"]))
-
-@app.message("発売年")
-def response_info(say):
-    say(str(info["発売年"]))
-
-@app.message("耐久年数")
-def response_info(say):
-    say(str(info["耐久年数"]))
-
-@app.message("レビュー")
-def response_info(say):
-    say(str(info["レビュー"]))
-
-
-@app.message("hello")  # 送信されたメッセージ内に"hello"が含まれていたときのハンドラ
-def response_info(say):
-    say("can I help you?")
 
 @app.event("message") # ロギング
 def handle_message_events(body, logger):
